@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cella - Fotofolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a, #111);
+      color: #eee;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 2rem;
+      text-align: center;
+      background-color: rgba(26, 26, 26, 0.8);
+      position: relative;
+      backdrop-filter: blur(8px);
+    }
+    .menu-toggle {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      background: none;
+      border: none;
+      color: #eee;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    nav {
+      position: absolute;
+      top: 3.5rem;
+      left: 1rem;
+      background: rgba(34, 34, 34, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 999;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    nav.active {
+      display: flex;
+    }
+    nav a {
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    nav a:hover {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 0 15px #22c55e, 0 0 25px rgba(34, 197, 94, 0.5);
+      transform: scale(1.05);
+    }
+
+    nav a::before,
+    .btn::before,
+    .contact-buttons a::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+    nav a:hover::before,
+    .btn:hover::before,
+    .contact-buttons a:hover::before {
+      transform: translateX(100%);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-section {
+      padding: 3rem 1rem;
+      text-align: center;
+    }
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #444;
+      box-shadow: 0 0 15px rgba(0, 255, 213, 0.3);
+      transition: transform 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    .profile-pic:hover {
+      transform: scale(1.05);
+    }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+    }
+
+    .audio-player {
+      width: 90%;
+      max-width: 400px;
+      margin: 1.5rem auto;
+      filter: drop-shadow(0 0 5px #ff6f61);
+      border-radius: 8px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 2rem auto;
+    }
+    .btn {
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 0 15px #22c55e, 0 0 25px rgba(34, 197, 94, 0.5);
+      transform: scale(1.05);
+    }
+
+    .info-boxes {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .info-box {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .info-icon {
+      font-size: 1.8rem;
+      color: #22c55e;
+    }
+    .info-text strong {
+      color: #1e293b;
+    }
+    .info-text small {
+      color: #475569;
+    }
+
+    #about {
+      display: none;
+      padding: 2rem 1.5rem;
+    }
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .about-text {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    .about-image {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 255, 170, 0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .about-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(0, 255, 170, 0.3);
+    }
+
+    .mini-profile {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      border: 2px solid #444;
+      box-shadow: 0 0 8px rgba(255,255,255,0.1);
+    }
+
+    .contact-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .contact-buttons a {
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-buttons a:hover {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 0 15px #22c55e, 0 0 25px rgba(34, 197, 94, 0.5);
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background-color: rgba(26, 26, 26, 0.8);
+      backdrop-filter: blur(8px);
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <nav id="mainMenu">
+      <a href="#" onclick="showSection('home')">Home</a>
+      <a href="#" onclick="showSection('about')">About</a>
+    </nav>
+  </header>
+
+  <!-- HOME -->
+  <section id="home" class="profile-section fade-in">
+    <img src="https://files.catbox.moe/g1s6ok.jpeg" alt="Profile" class="profile-pic" />
+    <h1>Cella</h1>
+    <p style="color: #f87171; font-size: 1.1rem;">Codinger</p>
+
+    <audio class="audio-player" controls autoplay loop>
+      <source src="https://files.catbox.moe/xdaj2o.mp3" type="audio/mp3" />
+    </audio>
+
+    <div class="info-boxes">
+      <div class="info-box">
+        <span class="info-icon">🧑‍💻‌</span>
+        <div class="info-text">
+          <strong>JavaScript</strong><br />
+          <small>Browser? Server? IoT? Game? — JavaScript selalu siap.</small>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon"></>📄🌐</span>
+        <div class="info-text">
+          <strong>Html</strong><br />
+          <small>Tanpa HTML, web hanyalah kekosongan – HTML memberi bentuk pada ide.</small>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon"><>🖌️</span>
+        <div class="info-text">
+          <strong>Css</strong><br />
+          <small>Desain bukan soal banyaknya warna, tapi bagaimana CSS mengatur harmoni.</small>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">🐍</span>
+        <div class="info-text">
+          <strong>Python</strong><br />
+          <small>Simple is better than complex – Python mengajarkan kita filosofi hidup.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="fade-in">
+    <img src="https://files.catbox.moe/g1s6ok.jpeg" class="mini-profile" alt="Mini Profile" />
+
+    <h2 class="section-title" id="about-title">About Me</h2>
+    <p class="about-text" id="about-text">
+      Halo! Saya Cella, penggemar teknologi yang mendalami dunia coding, DDoS untuk pengujian jaringan, dan ethical hacking.<br><br>
+    </p>
+
+    <h3 style="margin: 1rem 0 0.5rem; font-size: 1.2rem;">Mainin DDoS Buat Latihan Mental</h3>
+    <img src="https://files.catbox.moe/mbaskw.jpeg" class="about-image" alt="DDoS Tool"/>
+
+    <h3 style="margin: 1rem 0 0.5rem; font-size: 1.2rem;">Ngulik JavaScript Sampai Subuh</h3>
+    <img src="https://files.catbox.moe/efwtd1.jpeg" class="about-image" alt="JavaScript Coding"/>
+
+    <h3 style="margin: 1rem 0 0.5rem; font-size: 1.2rem;">Tool Andalan Buat Ngegas Dunia Maya</h3>
+    <img src="https://files.catbox.moe/y2sjnv.jpeg" class="about-image" alt="Hacking Tools"/>
+
+    <div class="contact-buttons">
+      <a href="https://t.me/rugibanget" target="_blank">Telegram</a>
+      <a href="https://wa.me/62882007138253" target="_blank">WhatsApp</a>
+      <a href="mailto:samebov206@twinelia.com">Email</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Cella. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('mainMenu').classList.toggle('active');
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('fade-in');
+      });
+      const target = document.getElementById(sectionId);
+      target.style.display = 'block';
+      target.classList.add('fade-in');
+      document.getElementById('mainMenu').classList.remove('active');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      showSection('home');
+    });
+  </script>
+</body>
+</html>

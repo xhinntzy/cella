@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cella AI - Asisten Cerdas</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -168,6 +169,24 @@
       justify-content: center;
     }
 
+    .file-upload {
+      background: #1e1f2f;
+      color: white;
+      margin-left: 10px;
+      border: none;
+      border-radius: 10px;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .file-upload input {
+      display: none;
+    }
+
     .clear-button {
       position: fixed;
       bottom: 70px;
@@ -201,35 +220,34 @@
   </style>
 </head>
 <body>
-  <!-- Logo pojok kiri atas -->
   <div class="top-logo">
     <img src="https://files.catbox.moe/11951e.jpeg" alt="Logo" />
     <span style="font-weight: bold; color: #55f1d2;">Cella AI</span>
   </div>
 
-  <!-- Loading -->
   <div id="preloader">
     <img src="https://files.catbox.moe/11951e.jpeg" alt="Cella AI" class="logo-animated" />
     <h1>Cella <span style="color:#55f1d2">AI</span></h1>
     <div class="loading-bar"></div>
   </div>
 
-  <!-- Konten -->
   <div class="container">
     <img src="https://files.catbox.moe/11951e.jpeg" alt="Cella AI" style="width:100px; border-radius: 20px; box-shadow: 0 6px 16px rgba(85, 241, 210, 0.4);" />
-    <h1>Halo! Saya Cella AI. Silahkan kirim pesan anda di bawah.</h1>
+    <h1>Halo! Saya Cella AI. Silahkan kirim pesan atau gambar anda di bawah.</h1>
     <div class="prompt-buttons">
       <button onclick="window.open('https://t.me/rugibanget', '_blank')">Contact Owner</button>
     </div>
     <div class="chat-messages" id="chat-box"></div>
   </div>
 
-  <!-- Tombol Clear -->
   <button class="clear-button" onclick="clearChat()">Clear</button>
 
-  <!-- Input -->
   <div class="chat-input">
     <textarea id="input" placeholder="Ketik pesan..." rows="1"></textarea>
+    <label class="file-upload">
+      <i class="fa fa-paperclip"></i>
+      <input type="file" accept="image/*" onchange="uploadImage(this)">
+    </label>
     <button onclick="handleSend()"><i class="fa fa-paper-plane"></i></button>
   </div>
 
@@ -278,14 +296,37 @@
       addLoadingBubble();
 
       try {
-        const res = await fetch(`https://xoo-api.vercel.app/luminai?text=${encodeURIComponent(text)}`);
-        const data = await res.json();
-        const reply = data.result || "⚠️ Terjadi kesalahan.";
+        const response = await axios.post(
+          "https://chateverywhere.app/api/chat/",
+          {
+            model: {
+              id: "gpt-4",
+              name: "GPT-4",
+              maxLength: 32000,
+              tokenLimit: 8000,
+              completionTokenLimit: 5000,
+              deploymentName: "gpt-4",
+            },
+            messages: [{ content: text, role: "user" }],
+            prompt: "",
+            temperature: 0.5,
+          },
+          {
+            headers: {
+              Accept: "*/*",
+              "User-Agent":
+                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            },
+          }
+        );
+
+        const reply = response?.data?.result || "⚠️ Tidak ada balasan.";
         removeLoadingBubble();
         addBubble(reply, "bot");
-      } catch {
+      } catch (error) {
         removeLoadingBubble();
         addBubble("⚠️ Gagal mengambil respons dari AI.", "bot");
+        console.error(error);
       }
     }
 
@@ -295,6 +336,31 @@
       if (text !== "") {
         sendText(text);
         input.value = "";
+      }
+    }
+
+    async function uploadImage(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      addBubble("📷 Mengunggah gambar...", "user");
+      addLoadingBubble();
+
+      const form = new FormData();
+      form.append("reqtype", "fileupload");
+      form.append("fileToUpload", file);
+
+      try {
+        const res = await axios.post("https://catbox.moe/user/api.php", form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        const imageUrl = res.data;
+        removeLoadingBubble();
+        sendText(`Ini gambar saya:\n${imageUrl}`);
+      } catch {
+        removeLoadingBubble();
+        addBubble("⚠️ Gagal mengunggah gambar.", "bot");
       }
     }
 

@@ -297,28 +297,20 @@
 
       try {
         const response = await axios.post(
-          "https://chateverywhere.app/api/chat/",
-          {
-            model: {
-              id: "gpt-4",
-              name: "GPT-4",
-              maxLength: 32000,
-              tokenLimit: 8000,
-              completionTokenLimit: 5000,
-              deploymentName: "gpt-4",
-            },
-            messages: [{ content: text, role: "user" }],
-            prompt: "",
-            temperature: 0.5,
-          },
-          {
-            headers: {
-              Accept: "*/*",
-              "User-Agent":
-                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-            },
-          }
-        );
+  "https://chateverywhere.app/api/chat/",
+  {
+    model: "gpt-4",
+    messages: [{ content: text, role: "user" }],
+    temperature: 0.5
+  },
+  {
+    headers: {
+      Accept: "*/*",
+      "User-Agent":
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+    },
+  }
+);
 
         const reply = response?.data?.result || "⚠️ Tidak ada balasan.";
         removeLoadingBubble();
